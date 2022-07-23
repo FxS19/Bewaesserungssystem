@@ -5,15 +5,76 @@
 -->
 <html>
     <head>
-    <title>ESP8266 Web Server</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" href="data:,">
+        <title>ESP8266 Bewässerungssystem</title>
+        <link href="bootstrap.min.css" rel="stylesheet">
+        <link href="mdb.min.css" rel="stylesheet">
+        <link href="giessanlage.css" rel="stylesheet">
+        <script src="bootstrap.bundle.min.js"></script>
+        <script src="mdb.min.js"></script>
+        <script src="Chart.min.js"></script>
+        <script src="giessanlage.js"></script>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta charset="utf-8" />
     </head>
-    <body>
-    <h1>ESP8266 Web Server</h1>
-    <p>
-        <a href="/on"><button class="button">ON</button></a>
-        <a href="/off"><button class="button button2">OFF</button></a>
-    </p>
+    <body class="mdc-typography">
+        <div class="container-fluid p-5 bg-primary text-white text-center">
+            <h1>Bewässerungssystem</h1>
+            <p>Erstellt von Felix Schmidt</p> 
+        </div>
+
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-sm">
+                  <h3>Info</h3>
+                  <p>Geplante Bewässerungsmenge: <output id="geplanteBewasserungsmenge">0</output>&nbsp;l</p>
+                </div>
+                <div class="col-sm">
+                    <h3>Einstellungen</h3>
+                    <div class="form-group">
+                        <label for="endpoints">Endpunkte</label>
+                        <input type="number" class="form-control" id="endpoints" min="1" max="255" value="50" placeholder="">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="mlPerEndpoint">Milliliter pro Endpunkt</label>
+                        <input type="number" class="form-control" id="mlPerEndpoint" min="1" max="255" value="50" placeholder="">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="mainPumpSpeed">Geschwindigkeit der Hauptpumpe:&nbsp;</label><output>24%</output>
+                        <input type="range" class="w-100 form-control-range" min="20", max="100" id="mainPumpSpeed" oninput="this.previousElementSibling.value = this.value + '%'">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="okSoilMoisture">Bodenfeuchtigkeits Schwelle:&nbsp;</label><output>24%</output>
+                        <input type="range" class="w-100 form-control-range" min="0", max="100" id="okSoilMoisture" oninput="this.previousElementSibling.value = this.value + '%'">
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-primary" onclick="sendSettings()">Speichern</button>
+                </div>
+
+                <div class="col-sm">
+                    <h3>Schnellaktionen</h3>
+                    <button type="button" class="btn btn-primary" onclick="water(0)">Pumpe Aus</button>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-primary" onclick="water(1)">1</button>
+                        <button type="button" class="btn btn-primary" onclick="water(5)">5</button>
+                        <button type="button" class="btn btn-primary" onclick="water(10)">10 Liter</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="literControlRange">Liter:&nbsp;</label><output>24</output>
+                        <input type="range" class="w-100 form-control-range" min="1", max="50" id="literControlRange" oninput="this.previousElementSibling.value = this.value">
+                        
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="water(document.getElementById('literControlRange').value)">Senden</button>
+                  </div>
+            </div> 
+        </div>
+        <div class="container mt-5">
+            <div id="lineChartDayLoaderContainer" class="progress">
+                <div id="lineChartDayLoader" class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <canvas id="lineChartDay"></canvas>
+        </div>
     </body>
 </html>

@@ -49,6 +49,8 @@ namespace WaterManagement {
           Pumps::setMain((uint8_t)EEPROM.read(MAIN_PUMP_SPEED_ADRESS));
           currentPumpeState = pumpState::ON;
           pumpStateUpdatedTime = currentTime;
+        } else {
+          Pumps::setMain(100);
         }
         break;
       }

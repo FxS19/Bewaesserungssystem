@@ -86,6 +86,12 @@ void loop() {
   Serial.print(soilMoisture);
   Serial.println(F("%"));
 
+  // Starte Gießen um 20 Uhr
+  if (timeNowLocal.tm_hour > 20 && !hasWatered) {
+    WaterManagement::water(WaterManagement::literNeededToday(soilMoisture, sunnySecondsToday));
+    hasWatered = true;
+  }
+
   WaterManagement::update();
 
   EnergyManagement::update();

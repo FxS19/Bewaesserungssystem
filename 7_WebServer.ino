@@ -92,10 +92,18 @@ namespace WebServer {
         request->send(200, F("text/plain"), String((uint8_t)EEPROM.read(MAIN_PUMP_SPEED_ADRESS)));
       }); 
 
+      server.on("^\\/log\\/([0-9]+)$", HTTP_GET, [](AsyncWebServerRequest *request){
+        String valueString = request->pathArg(0);
+        struct Log::LogData data = Log::read(valueString.toInt());
+        request->send(200, F("text/plain"), "{\"time\":"+ String(data.time) + ", \"soil\": " + String(data.soil) + ", \"lux\": " + String(data.lux) + "}");
+        
+      }); 
+
       //*************************
       //*****RESET_Log***** Crashes the MCU
       //*************************
       server.on("/autoWaterToday", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        String valueString = request->pathArg(0);
         request->send(200, F("text/plain"), String(waterForToday));
       });
     }
