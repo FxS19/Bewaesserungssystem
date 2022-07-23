@@ -125,7 +125,7 @@ void loop() {
 
   if (timeNow - lastBackupTime > 300) { // Backup alle 5 Minuten
     DS3231_Eeprom::write(DS3231_EEPROM_SUNNY_SECONDS_ADDRESS, (int)sunnySecondsToday);
-    DS3231_Eeprom::write(DS3231_EEPROM_HAS_WATERED_ADDRESS, (byte)hasWatered);
+    DS3231_Eeprom::write(DS3231_EEPROM_HAS_WATERED_ADDRESS, (byte)(hasWatered | waterLevel << 1));
     DS3231_Eeprom::write(DS3231_EEPROM_LAST_BACKUP_ADDRESS, timeNow);
     lastBackupTime = timeNow;
     Serial.println(F("Backup done"));

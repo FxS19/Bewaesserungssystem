@@ -1,4 +1,4 @@
-
+//#define ENERGY_MANAGEMENT_DEBUG
 namespace EnergyManagement {
   time_t wifi_last_changed;
   bool wifiEnabled = true;
@@ -6,7 +6,10 @@ namespace EnergyManagement {
 
   void update() {
     time_t t = time(nullptr);
-
+    #ifdef ENERGY_MANAGEMENT_DEBUG
+    Serial.println("AP_Stations " + String(WiFi.softAPgetStationNum()));
+    Serial.println("Wifi Status " + String(WiFi.status()));
+    #endif
     if ((WiFi.status() != WL_CONNECTED && WiFi.softAPgetStationNum() == 0 ) && t - wifi_last_changed > 30 && wifiEnabled) {
       Serial.println(F("EnergyManager: WIFI Sleep Mode"));
       RealTimeClock::offlineMode();

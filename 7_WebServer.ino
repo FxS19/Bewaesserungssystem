@@ -95,7 +95,13 @@ namespace WebServer {
       server.on("^\\/log\\/([0-9]+)$", HTTP_GET, [](AsyncWebServerRequest *request){
         String valueString = request->pathArg(0);
         struct Log::LogData data = Log::read(valueString.toInt());
-        request->send(200, F("text/plain"), "{\"time\":"+ String(data.time) + ", \"soil\": " + String(data.soil) + ", \"lux\": " + String(data.lux) + "}");
+        request->send(200, F("text/plain"), 
+        "{\"time\":"+ String(data.time) + 
+        ", \"soil\": " + String(data.soil) + 
+        ", \"lux\":" + String(data.lux) + 
+        ", \"watered\":" + String((bool)(data.flags & 0b00000001)) +
+        ", \"waterlevel\":" + String((bool)((data.flags >> 1) & 0b00000001)) +
+        "}");
         
       }); 
 
