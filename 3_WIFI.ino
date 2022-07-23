@@ -1,27 +1,51 @@
 namespace WiFiManager {
-  void setup() {
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, pass);
-
-    for (int i = 0; (i < 20) && (WiFi.status() != WL_CONNECTED) ; i++) {
-      digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-      delay(500);
-      Serial.print(".");
-      Serial.print(i);
+  enum class WifiMode {OFF, AP, STA};
+  WifiMode currentWifiMode = WifiMode::OFF;
+  
+  
+  void start() {
+    switch (currentWifiMode) {
+      case WifiMode::OFF: {
+        break;
+      }
+      case WifiMode::AP: {
+        Serial.print("Open hotsopt: Giessanlage");
+        Serial.println(ssid);
+        WiFi.mode(WIFI_AP);
+        WiFi.softAP("Giessanlage", "");
+        break;
+      }
+      case WifiMode::STA: {
+        Serial.print("Connecting to ");
+        Serial.println(ssid);
+        WiFi.mode(WIFI_STA);
+        WiFi.begin(ssid, pass);
+        break;
+      }
     }
-    digitalWrite(LED_BUILTIN, HIGH);
-    Serial.println("");
+  }
 
+  void setup() {
+    currentWifiMode = WifiMode::STA;
+    WiFiManager::start();
+    uint8_t ctr = 0;
+    while(ctr < 10 &&  WiFi.status() != WL_CONNECTED) {
+      ctr++;
+      delay(1000);
+      Serial.print(".");
+      digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    }
+    Serial.println();
+    digitalWrite(LED_BUILTIN, HIGH);
     if (WiFi.status() == WL_CONNECTED) {
-      Serial.println("WiFi connected");
-      Serial.println("IP address: ");
       Serial.println(WiFi.localIP());
     } else {
-      //Open Hotspot for configuration
-      WiFi.mode(WIFI_AP);
-      WiFi.softAP("Giessanlage", "");
+      currentWifiMode = WifiMode::AP;
+      WiFiManager::start();
     }
+  }
+
+  void disableWifi(){
+    WiFi.mode( WIFI_OFF );
   }
 }
