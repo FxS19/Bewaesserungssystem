@@ -12,7 +12,7 @@ void postSetup() {
   lastExecutionLocalTime = lastBackupTime;
 
   if (lastExecutionLocalTime.tm_yday != lastBackupTime.tm_yday) {
-    DS3231_Eeprom::write(DS3231_EEPROM_SUNNY_SECONDS_ADDRESS, 0);
+    DS3231_Eeprom::write(DS3231_EEPROM_SUNNY_SECONDS_ADDRESS, (int)0);
     DS3231_Eeprom::write(DS3231_EEPROM_HAS_WATERED_ADDRESS, 0b00000000);
   }
   //Werte zurückspeichern
@@ -57,7 +57,7 @@ void loop() {
   // get soilMoisture
   uint8_t soilMoisture = SoilSensor::read();
 
-  float temperature = RTC.getTemp();
+  //float temperature = RTC.getTemp();
 
   if (!waterLevel) Pumps::setMain(0); //Notabschaltung
 
@@ -90,7 +90,7 @@ void loop() {
   Serial.println(hasWatered ? "Ja" : "Nein");
 
   // Starte Gießen um 20 Uhr
-  if (timeNowLocal.tm_hour > 20 && !hasWatered) {
+  if (timeNowLocal.tm_hour >= 20 && !hasWatered) {
     WaterManagement::water(WaterManagement::literNeededToday(soilMoisture, sunnySecondsToday));
     hasWatered = true;
   }

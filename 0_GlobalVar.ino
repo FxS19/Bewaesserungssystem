@@ -35,6 +35,7 @@ time_t lastBackupTime = 0;
 struct tm lastExecutionLocalTime;
 float waterForToday = 0;
 
+
 /*struct MyData
 {
     float lux;

@@ -12,8 +12,15 @@ window.addEventListener('load', async function() {
     document.getElementById("okSoilMoisture").value = await sendRequest("/okSoilMoisture");
     document.getElementById("okSoilMoisture").oninput();
     document.getElementById("literControlRange").oninput();
-    document.getElementById("geplanteBewasserungsmenge").value = await sendRequest("/autoWaterToday");
     setTimeout(addLog, 100);
+    setInterval(async function() {
+        document.getElementById("geplanteBewasserungsmenge").value = await sendRequest("/autoWaterToday");
+        document.getElementById("temperature").value = await sendRequest("/temperature");
+        document.getElementById("soilMoisture").value = await sendRequest("/soilMoisture");
+        document.getElementById("waterStatus").value = await sendRequest("/waterStatus") == "1" ? "Voll" : "Leer";
+        document.getElementById("lux").value = await sendRequest("/lux");
+    }, 5000);
+    document.getElementById("jsWarn").style.display = "none";;
 });
 
 async function sendSettings() {

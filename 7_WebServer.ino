@@ -106,11 +106,43 @@ namespace WebServer {
       }); 
 
       //*************************
-      //*****RESET_Log***** Crashes the MCU
+      //*****Wasser für heute
       //*************************
       server.on("/autoWaterToday", HTTP_GET, [] (AsyncWebServerRequest *request) {
         String valueString = request->pathArg(0);
         request->send(200, F("text/plain"), String(waterForToday));
+      });
+
+      //*************************
+      //*****temperature
+      //*************************
+      server.on("/temperature", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        String valueString = request->pathArg(0);
+        request->send(200, F("text/plain"), String(RTC.getTemp()));
+      });
+
+      //*************************
+      //*****Bodenfeuchtigkeit
+      //*************************
+      server.on("/soilMoisture", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        String valueString = request->pathArg(0);
+        request->send(200, F("text/plain"), String(SoilSensor::read()));
+      });
+
+      //*************************
+      //*****Wasser status
+      //*************************
+      server.on("/waterStatus", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        String valueString = request->pathArg(0);
+        request->send(200, F("text/plain"), String(WaterLevelSensor::read()));
+      });
+
+      //*************************
+      //*****lux
+      //*************************
+      server.on("/lux", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        String valueString = request->pathArg(0);
+        request->send(200, F("text/plain"), String(lightMeter.readLightLevel()));
       });
     }
     

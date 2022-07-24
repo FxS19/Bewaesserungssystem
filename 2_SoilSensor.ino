@@ -5,10 +5,8 @@ namespace SoilSensor {
 
   int16_t read() {
     uint8_t samples = 20;
-    uint8_t delay_ms = 5;
     uint64_t accumulator = 0;
     for (uint16_t i = 0; i < samples; i++) {
-        delay(delay_ms);
         accumulator += analogRead(SOIL_SENSOR_PIN);
     }
     // the sensor gives the dryness measure
