@@ -23,7 +23,6 @@ namespace Pumps {
       analogWrite(PUMP_MAIN_PIN, 0);
       mainPumpPercentage = 0;
       Serial.println(F("Pump is disabled because of low water condition..."));
-      digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     }
   }
 

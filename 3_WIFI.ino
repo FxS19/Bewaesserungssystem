@@ -4,6 +4,8 @@ namespace WiFiManager {
   
   
   void start() {
+    WiFi.forceSleepWake();
+    delay(1);
     switch (currentWifiMode) {
       case WifiMode::OFF: {
         break;
@@ -46,6 +48,9 @@ namespace WiFiManager {
   }
 
   void disableWifi(){
+    WiFi.softAPdisconnect(true);
     WiFi.mode( WIFI_OFF );
+    WiFi.forceSleepBegin();
+    delay(1);
   }
 }

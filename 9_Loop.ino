@@ -96,20 +96,6 @@ void loop() {
 
   EnergyManagement::update();
 
-  {
-    Serial.println("\nLogs:");
-    for (int i = 1; i < 5; i++) {
-      struct Log::LogData ld = Log::read(i);
-      Serial.print(F("time: "));
-      Serial.print(ld.time);
-      Serial.print(" Soil: ");
-      Serial.print(ld.soil);
-      Serial.print("% Light: ");
-      Serial.print(ld.lux);
-      Serial.println("lux");
-    }
-  }
-
   if (Log::needsToLog()) {
     struct Log::LogData data = {
       timeNow, //time
@@ -120,8 +106,6 @@ void loop() {
     Serial.println(F("Log Data"));    
     Log::write(data);
   }
-
-  digitalWrite(LED_BUILTIN, HIGH);
 
   if (timeNow - lastBackupTime > 300) { // Backup alle 5 Minuten
     DS3231_Eeprom::write(DS3231_EEPROM_SUNNY_SECONDS_ADDRESS, (int)sunnySecondsToday);
@@ -134,5 +118,6 @@ void loop() {
   
   lastExecutionLocalTime = timeNowLocal;
   lastExecutionTime = timeNow;
+  digitalWrite(LED_BUILTIN, HIGH);
   delay(1000);//ersetzen durch echtes schlafen (wifi on/off, jenachdem)
 }
