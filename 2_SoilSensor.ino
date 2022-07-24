@@ -13,7 +13,9 @@ namespace SoilSensor {
     }
     // the sensor gives the dryness measure
     // substract it from the max value so that we get the moisture measure
-    return 100 - 0.59 * ((accumulator / samples) - 315);
+    int16_t ret = 100 - 0.59 * ((accumulator / samples) - 315);
+    if (ret > 100) return 101;
+    if (ret < 0) return 0;
+    return ret;
   }
 }
-

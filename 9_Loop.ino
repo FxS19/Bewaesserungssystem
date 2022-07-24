@@ -11,7 +11,7 @@ void postSetup() {
   lastExecutionTime = last_backup;
   lastExecutionLocalTime = lastBackupTime;
 
-  if (lastExecutionLocalTime.tm_yday < lastBackupTime.tm_yday) {
+  if (lastExecutionLocalTime.tm_yday != lastBackupTime.tm_yday) {
     DS3231_Eeprom::write(DS3231_EEPROM_SUNNY_SECONDS_ADDRESS, 0);
     DS3231_Eeprom::write(DS3231_EEPROM_HAS_WATERED_ADDRESS, 0b00000000);
   }
@@ -61,7 +61,7 @@ void loop() {
 
   if (!waterLevel) Pumps::setMain(0); //Notabschaltung
 
-  if (lux > 15000) sunnySecondsToday += timeNow - lastExecutionTime; // relative bright light
+  if (lux > 1200) sunnySecondsToday += timeNow - lastExecutionTime; // relative bright light
 
   if (timeNowLocal.tm_mday != lastExecutionLocalTime.tm_mday) { // Day has changed
     sunnySecondsToday = 0;
@@ -86,6 +86,9 @@ void loop() {
   Serial.print(soilMoisture);
   Serial.println(F("%"));
 
+  Serial.print(F("Heute gegossen: "));
+  Serial.println(hasWatered ? "Ja" : "Nein");
+
   // Starte Gießen um 20 Uhr
   if (timeNowLocal.tm_hour > 20 && !hasWatered) {
     WaterManagement::water(WaterManagement::literNeededToday(soilMoisture, sunnySecondsToday));
@@ -109,7 +112,7 @@ void loop() {
 
   if (timeNow - lastBackupTime > 300) { // Backup alle 5 Minuten
     DS3231_Eeprom::write(DS3231_EEPROM_SUNNY_SECONDS_ADDRESS, (int)sunnySecondsToday);
-    DS3231_Eeprom::write(DS3231_EEPROM_HAS_WATERED_ADDRESS, (byte)(hasWatered | waterLevel << 1));
+    DS3231_Eeprom::write(DS3231_EEPROM_HAS_WATERED_ADDRESS, (byte)(hasWatered));
     DS3231_Eeprom::write(DS3231_EEPROM_LAST_BACKUP_ADDRESS, timeNow);
     lastBackupTime = timeNow;
     Serial.println(F("Backup done"));

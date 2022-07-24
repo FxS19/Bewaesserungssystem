@@ -90,7 +90,7 @@ namespace WaterManagement {
     if (soilMoisture >= (uint8_t)EEPROM.read(OK_SOIL_MOISTURE_ADRESS)) return 0; // Boden ist noch feucht genug
     
     float sunnyHours = sunnySeconds / 3600.0f;
-    if (sunnyHours > 10) {
+    if (sunnyHours > 7) {
       sunnyHours = 10.0f;
     }
     float sunCompensation = 0.5f + sunnyHours / 20.0f;
