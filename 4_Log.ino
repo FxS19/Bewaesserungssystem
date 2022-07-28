@@ -54,10 +54,10 @@ namespace Log {
       };
       return data;
     }
-    unsigned int address = DS3231_Eeprom::read_word(DS3231_EEPROM_CURRENT_LOG_ADDRESS);
+    unsigned int address = DS3231_Eeprom::read_int(DS3231_EEPROM_CURRENT_LOG_ADDRESS);
     unsigned int address_offset = negativeValueOffset * BYTES_PER_LOG_ENTRY;
     if (address - DS3231_EEPROM_FIRST_LOG_ADRESS < address_offset) { // overflow
-      address = DS3231_EEPROM_LAST_LOG_ADRESS - (address_offset - (address - DS3231_EEPROM_FIRST_LOG_ADRESS));
+      address = DS3231_EEPROM_LAST_LOG_ADRESS  + address;
     }
     address -= address_offset;
     struct LogData data = {
