@@ -66,6 +66,7 @@ void loop() {
   if (timeNowLocal.tm_mday != lastExecutionLocalTime.tm_mday) { // Day has changed
     sunnySecondsToday = 0;
     hasWatered = false;
+    WaterManagement::water(0); // Übrig gebliebene Bewässerung des Tages löschen und Pumpen stoppen (z.b. Nothalt)
   }
 
   printTm("Uhrzeit:\t", &timeNowLocal);
