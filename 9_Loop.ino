@@ -61,7 +61,7 @@ void loop() {
 
   if (!waterLevel) Pumps::setMain(0); //Notabschaltung
 
-  if (lux > 1200) sunnySecondsToday += timeNow - lastExecutionTime; // relative bright light
+  if (lux > 8000) sunnySecondsToday += timeNow - lastExecutionTime; // relative bright light
 
   if (timeNowLocal.tm_mday != lastExecutionLocalTime.tm_mday) { // Day has changed
     sunnySecondsToday = 0;

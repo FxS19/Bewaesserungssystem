@@ -76,7 +76,7 @@ async function addAllLog() {
         var data = JSON.parse(await sendRequest("/log/"+i));
         if (data.time == 0) break;
         var date = new Date(data.time * 1000);
-        timestamps.unshift(date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes());
+        timestamps.unshift(("00" + date.getDate()).slice(-2) + "." + ("00"+(date.getMonth() + 1).slice(-2)) + "." + date.getFullYear() + " " + ("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2));
         soil.unshift(data.soil);
         lux.unshift(data.lux);
         watered.unshift(data.watered * 100);
@@ -85,6 +85,29 @@ async function addAllLog() {
     document.getElementById("lineChartAllLoaderContainer").style.display = "none";
     var ctxL = document.getElementById("lineChartAll").getContext('2d');
     drawChart(ctxL, timestamps, soil, lux, waterlevel, watered);
+}
+
+async function downloadCSV() {
+    var valuesToDownload = 24 * 2 * parseInt(document.getElementById("csvDays").value, 10);
+    var data = "Timestamp, SoilMositure, Lux, Watered, WaterLevel\n";
+    for (var i = 1; i <= valuesToDownload ; i++) {
+        var percentage = (i/valuesToDownload) * 100;
+        document.getElementById("CSVLoader").setAttribute("aria-valuenow", percentage);
+        document.getElementById("CSVloader").style.width = percentage + "%";
+        var data = JSON.parse(await sendRequest("/log/"+i));
+        if (data.time == 0) break;
+        var date = new Date(data.time * 1000);
+        var timestamp =("00" + date.getDate()).slice(-2) + "." + ("00"+(date.getMonth() + 1).slice(-2)) + "." + date.getFullYear() + " " + ("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2);
+        var soil = data.soil;
+        var lux = data.lux;
+        var watered = data.watered;
+        var waterLevel = data.waterlevel;
+        data += timestamp + "," + soil + "," + lux + "," + watered + "," + waterLevel + "\n";
+    }
+    var currentTimeStamp = newDate();
+    var timeString = currentTimeStamp.getFullYear() + ("00"+(currentTimeStamp.getMonth() + 1).slice(-2)) + ("00" + currentTimeStamp.getDate()).slice(-2)  + " " + ("00" + currentTimeStamp.getHours()).slice(-2) + "-" + ("00" + currentTimeStamp.getMinutes()).slice(-2);
+    var blob = new Blob([userInput], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "Bewaesserungssystem-"+ timeString +".csv");
 }
 
 /////// CHART
