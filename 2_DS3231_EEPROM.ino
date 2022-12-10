@@ -84,11 +84,23 @@ namespace DS3231_Eeprom {
   }
 
   void write(word eeaddress, int data) {
-    write(eeaddress, (word)data );
+    byte* bytes = (byte*)&data;
+    write(eeaddress    , bytes[0]);
+    write(eeaddress + 1, bytes[1]);
   }
 
   int read_int(word eeaddress) {
-    return (int)read_word(eeaddress);
+    byte bytes[2] {
+      read_byte(eeaddress), 
+      read_byte(eeaddress + 1)
+    };
+    #ifdef EEPROM_DEBUG_READ
+    Serial.print(F("\t\tRead int: "));
+    Serial.print(eeaddress);
+    Serial.print("\tdata: ");
+    Serial.println(*(int*)bytes);
+    #endif
+    return *(int*)bytes;
   }
 
   void write(word eeaddress, float data) {//benötigt 4 Addressen
