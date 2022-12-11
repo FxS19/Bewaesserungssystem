@@ -4,6 +4,7 @@ namespace WaterManagement {
   float literToWater = 0; // Setzen, um Bewässerung zu starten
   time_t literUpdatedTime;
   time_t pumpStateUpdatedTime;
+  uint8_t pumpSpeed = 0;
   enum class pumpState {OFF, STARTED, ON};
   pumpState currentPumpeState = pumpState::OFF;
 
@@ -19,6 +20,7 @@ namespace WaterManagement {
     literUpdatedTime = time(nullptr);
     literToWater = liter;
     pumpStateUpdatedTime = time(nullptr);
+    pumpSpeed = (uint8_t)EEPROM.read(MAIN_PUMP_SPEED_ADRESS);
   }
 
   void update() {
@@ -45,12 +47,12 @@ namespace WaterManagement {
       }
       case pumpState::STARTED: {
         Serial.println(F("WaterManagement:\tSTARTED"));
-        if (currentTime - pumpStateUpdatedTime >= 5) { //5 Sekunden auf Vollast, um Luft zu entfernen
-          Pumps::setMain((uint8_t)EEPROM.read(MAIN_PUMP_SPEED_ADRESS));
+        if (currentTime - pumpStateUpdatedTime <= 5) { //5 seconds full throttle to bleed air and build up preassure in the hose system
+          Pumps::setMain(100);
+        } else {
+          Pumps::setMain(pumpSpeed);
           currentPumpeState = pumpState::ON;
           pumpStateUpdatedTime = currentTime;
-        } else {
-          Pumps::setMain(100);
         }
         break;
       }
@@ -61,14 +63,15 @@ namespace WaterManagement {
         }
         Serial.print(currentTime - pumpStateUpdatedTime);
         Serial.print("s");
-        if (currentTime - pumpStateUpdatedTime >= 120 && Pumps::mainPumpPercentage > 0) {//120
-          Pumps::setMain(0); // Pumpe abkühlen lassen
+        int motorControllerCooldown = (100 - pumpSpeed) * 5; // the controller heats up more when the pump is running solwer
+        if (currentTime - pumpStateUpdatedTime >= 60 + motorControllerCooldown 
+            && Pumps::mainPumpPercentage > 0) { // Wait at least 60 seconds
+          Pumps::setMain(0); // Let pump and controller cool down
           pumpStateUpdatedTime = currentTime;
-        } else if (currentTime - pumpStateUpdatedTime >= 120 && Pumps::mainPumpPercentage == 0) {//240
-          Pumps::setMain(100); // Starte nächste Bewässerungsphase
+        } else if (currentTime - pumpStateUpdatedTime >= 60 + motorControllerCooldown 
+                  && Pumps::mainPumpPercentage == 0) {// start next watering period
+          currentPumpeState = pumpState::STARTED;
           pumpStateUpdatedTime = currentTime;
-        } else if (Pumps::mainPumpPercentage == 100) {
-          Pumps::setMain((uint8_t)EEPROM.read(MAIN_PUMP_SPEED_ADRESS));
         }
         Serial.println();
         break;
@@ -95,7 +98,16 @@ namespace WaterManagement {
     }
     float sunCompensation = 0.5f + sunnyHours / 20.0f;
     float soilHumidityCompensation = 1.0f - ( soilMoisture / 200.0f );
-    uint8_t mlPerEndpoint = (uint8_t)EEPROM.read(BASE_ML_PER_WATERING_POINT_ADRESS);
+    
+    uint mlPerEndpoint = 0;
+    {
+      byte bytes[2] {
+        EEPROM.read(BASE_ML_PER_WATERING_POINT_ADRESS), 
+        EEPROM.read(BASE_ML_PER_WATERING_POINT_ADRESS + 1)
+      };
+      mlPerEndpoint = *(uint*)bytes;
+    }
+
     uint8_t wateringPoints = (uint8_t)EEPROM.read(WATERING_POINTS_ADRESS);
     
     #ifdef WATER_MANAGEMENT_DEBUG
@@ -104,13 +116,13 @@ namespace WaterManagement {
     Serial.print(F(" * (soilHumidityCompensation)"));
     Serial.print(soilHumidityCompensation);
     Serial.print(F(" * (mlPerEndpoint)"));
-    Serial.print((uint16_t)mlPerEndpoint);
+    Serial.print((uint)mlPerEndpoint);
     Serial.print(F(" * (wateringPoints)"));
-    Serial.print((uint16_t)wateringPoints);
+    Serial.print(wateringPoints);
     Serial.print(F(" = "));
-    Serial.print((sunCompensation * soilHumidityCompensation * (mlPerEndpoint / 1000.0f) * (uint16_t)wateringPoints));
+    Serial.print((sunCompensation * soilHumidityCompensation * (mlPerEndpoint / 1000.0f) * wateringPoints));
     Serial.println(" liter");
     #endif
-    return (sunCompensation * soilHumidityCompensation * (mlPerEndpoint / 1000.0f) * (uint16_t)wateringPoints);
+    return (sunCompensation * soilHumidityCompensation * (mlPerEndpoint / 1000.0f) * wateringPoints);
   }
 }

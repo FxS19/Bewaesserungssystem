@@ -42,7 +42,10 @@ namespace WebServer {
       //************************************
       server.on("^\\/baseMlPerWateringPoint\\/([0-9]+)$", HTTP_GET, [] (AsyncWebServerRequest *request) {
         String valueString = request->pathArg(0);
-        EEPROM.write(BASE_ML_PER_WATERING_POINT_ADRESS, (uint8_t)valueString.toInt());
+        uint value = (uint)valueString.toInt();
+        byte* bytes = (byte*)&value;
+        EEPROM.write(BASE_ML_PER_WATERING_POINT_ADRESS    , bytes[0]);
+        EEPROM.write(BASE_ML_PER_WATERING_POINT_ADRESS + 1, bytes[1]);
         if (!EEPROM.commit()) {
           request->send(500, F("text/plain"), F("ERROR! EEPROM commit failed"));
         } else {
@@ -51,7 +54,11 @@ namespace WebServer {
       });
       
       server.on("/baseMlPerWateringPoint", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(200, F("text/plain"), String((uint8_t)EEPROM.read(BASE_ML_PER_WATERING_POINT_ADRESS)));
+        byte bytes[2] {
+          EEPROM.read(BASE_ML_PER_WATERING_POINT_ADRESS), 
+          EEPROM.read(BASE_ML_PER_WATERING_POINT_ADRESS + 1)
+        };
+        request->send(200, F("text/plain"), String(*(uint*)bytes));
       });
   
       //***********************
