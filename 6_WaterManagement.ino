@@ -64,11 +64,15 @@ namespace WaterManagement {
         Serial.print(currentTime - pumpStateUpdatedTime);
         Serial.print("s");
         int motorControllerCooldown = (100 - pumpSpeed) * 5; // the controller heats up more when the pump is running solwer
-        if (currentTime - pumpStateUpdatedTime >= 60 + motorControllerCooldown 
-            && Pumps::mainPumpPercentage > 0) { // Wait at least 60 seconds
+        
+        // If Punp is running for longer then 2 Minutes disable it to cooldown
+        if (currentTime - pumpStateUpdatedTime >= 120 
+            && Pumps::mainPumpPercentage > 0) { 
           Pumps::setMain(0); // Let pump and controller cool down
           pumpStateUpdatedTime = currentTime;
-        } else if (currentTime - pumpStateUpdatedTime >= 60 + motorControllerCooldown 
+        
+        // If cooldown ist done
+        } else if (currentTime - pumpStateUpdatedTime >= 30 + motorControllerCooldown // Wait at least 30 seconds between watering to cool down
                   && Pumps::mainPumpPercentage == 0) {// start next watering period
           currentPumpeState = pumpState::STARTED;
           pumpStateUpdatedTime = currentTime;
