@@ -3,3 +3,5 @@
 .vscode/arduino.json
 .vscode/c_cpp_properties.json
 00_SSID.ino
+*.littleFs
+Backup

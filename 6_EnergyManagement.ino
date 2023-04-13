@@ -7,9 +7,9 @@ namespace EnergyManagement {
   void update() {
     time_t t = time(nullptr);
     #ifdef ENERGY_MANAGEMENT_DEBUG
-    Serial.println("AP_Stations " + String(WiFi.softAPgetStationNum()));
-    Serial.println("Wifi Status " + String(WiFi.status()));
-    Serial.println("Wifi internal " + String(wifiEnabled));
+    //Serial.println("AP_Stations " + String(WiFi.softAPgetStationNum()));
+    //Serial.println("Wifi Status " + String(WiFi.status()));
+    //Serial.println("Wifi internal " + String(wifiEnabled));
     #endif
     if ((WiFi.status() != WL_CONNECTED && WiFi.softAPgetStationNum() == 0 ) && t - wifi_last_changed > 30 && wifiEnabled) {
       Serial.println(F("EnergyManager: WIFI Sleep Mode"));

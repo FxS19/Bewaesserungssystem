@@ -11,7 +11,7 @@
 #include <string>
 #include <WiFiUdp.h>
 #include <Wire.h>
-#include <RTC.h>
+#include "RTClib.h"
 #include <BH1750.h>
 #include <TZ.h>
 #include <Schedule.h> //?
@@ -19,7 +19,7 @@
 #include <time.h>
 #include <ESP8266WiFi.h>
 #include <sys/time.h>
-#include <FS.h>
+#include <LittleFS.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <EEPROM.h>

@@ -34,10 +34,10 @@ void printTm(const char* what, const tm* tm) {
 }
 
 void loop() {
-  Serial.write(27);       // ESC command
-  Serial.print("[2J");    // clear screen command
-  Serial.write(27);
-  Serial.print("[H");     // cursor to home command
+  //Serial.write(27);       // ESC command
+  //Serial.print("[2J");    // clear screen command
+  //Serial.write(27);
+  //Serial.print("[H");     // cursor to home command
   RealTimeClock::update();
   // get current time
   const time_t timeNow = time(nullptr);
@@ -69,26 +69,26 @@ void loop() {
     WaterManagement::water(0); // Übrig gebliebene Bewässerung des Tages löschen und Pumpen stoppen (z.b. Nothalt)
   }
 
-  printTm("Uhrzeit:\t", &timeNowLocal);
-  Serial.print(F("\t\t"));
-  Serial.println(timeNow);
+  // printTm("Uhrzeit:\t", &timeNowLocal);
+  // Serial.print(F("\t\t"));
+  // Serial.println(timeNow);
 
-  Serial.print(F("LightMeter:\t"));
-  Serial.print(lux);
-  Serial.println("lux");
+  // Serial.print(F("LightMeter:\t"));
+  // Serial.print(lux);
+  // Serial.println("lux");
   
-  Serial.print(F("Sunny seconds:\t"));
-  Serial.println(sunnySecondsToday);
+  // Serial.print(F("Sunny seconds:\t"));
+  // Serial.println(sunnySecondsToday);
   
-  Serial.print(F("Water Level:\t"));
-  Serial.println(waterLevel ? "OK" : "LOW");
+  // Serial.print(F("Water Level:\t"));
+  // Serial.println(waterLevel ? "OK" : "LOW");
 
-  Serial.print(F("Soil Moisture:\t"));
-  Serial.print(soilMoisture);
-  Serial.println(F("%"));
+  // Serial.print(F("Soil Moisture:\t"));
+  // Serial.print(soilMoisture);
+  // Serial.println(F("%"));
 
-  Serial.print(F("Heute gegossen: "));
-  Serial.println(hasWatered ? "Ja" : "Nein");
+  // Serial.print(F("Heute gegossen: "));
+  // Serial.println(hasWatered ? "Ja" : "Nein");
 
   // Starte Gießen um 20 Uhr
   if (timeNowLocal.tm_hour >= 20 && !hasWatered) {

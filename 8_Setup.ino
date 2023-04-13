@@ -1,5 +1,5 @@
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(921600);
   Serial.println();
   pinMode(LED_BUILTIN, OUTPUT);
   Wire.begin(); // initialise the connection
@@ -23,11 +23,9 @@ void setup() {
 
   Log::setup();
 
-  SPIFFS.begin();
-
   // Initialize SPIFFS
-  if(!SPIFFS.begin()){
-    Serial.println("An Error has occurred while mounting SPIFFS");
+  if(!LittleFS.begin()){
+    Serial.println("An Error has occurred while mounting LittleFS");
     return;
   }
 

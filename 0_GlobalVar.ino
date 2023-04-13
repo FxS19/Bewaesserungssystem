@@ -16,7 +16,7 @@
 
 #define MY_TZ TZ_Europe_Berlin
 
-static DS3231 RTC;
+static RTC_DS3231 RTC;
 
 BH1750 lightMeter;
 

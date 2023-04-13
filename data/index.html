@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!-- 
-  Rui Santos
-  Complete project details at https://RandomNerdTutorials.com  
--->
 <html>
     <head>
         <title>ESP8266 Bewässerungssystem</title>
@@ -15,21 +11,25 @@
         <div class="container-fluid p-5 bg-primary text-white text-center">
             <h1>Bewässerungssystem</h1>
             <p>Erstellt von Felix Schmidt (07.2022)</p> 
+            <p>Update: 04.2023</p>
         </div>
 
         <div id="jsWarn" class="container bg-danger">
-            <p class="text-white text-center">Die Website wird aktuell geladen. Ist diese Meldung länger als 20 Sekunden zu sehen, muss die Seite neu geladen werden.</p>
+            <p class="text-white text-center">Die Website wird aktuell geladen. Ist diese Meldung länger als 20 Sekunden zu sehen, ist ein Fehler beim Laden der Seite aufgetreten und ein manuelles Neuladen ist erforderlich.</p>
         </div>
 
         <div class="container mt-5">
             <div class="row">
                 <div class="col-sm">
                   <h3>Info</h3>
+                  <p>Uhrzeit: <output id="clock">N/A</output></p>
                   <p>Geplante Bewässerungsmenge: <output id="geplanteBewasserungsmenge">N/A</output>&nbsp;l</p>
                   <p>Temperatur: <output id="temperature">N/A</output>&nbsp;°C</p>
                   <p>Bodenfeuchtigkeit: <output id="soilMoisture">N/A</output>&nbsp;%</p>
                   <p>Wasserfüllstand: <output id="waterStatus">N/A</output></p>
                   <p>Helligkeit: <output id="lux">N/A</output>&nbsp;lux</p>
+                  <br>
+                  <button type="button" class="btn btn-primary" onclick="updateInfo()">Aktualisieren</button>
                 </div>
                 <div class="col-sm">
                     <h3>Einstellungen</h3>

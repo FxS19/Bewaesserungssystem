@@ -1,4 +1,4 @@
-//#define WATER_MANAGEMENT_DEBUG
+#define WATER_MANAGEMENT_DEBUG
 
 namespace WaterManagement {
   float literToWater = 0; // Setzen, um Bewässerung zu starten
@@ -36,7 +36,7 @@ namespace WaterManagement {
 
     switch (currentPumpeState) {
       case pumpState::OFF: {
-        Serial.println(F("WaterManagement:OFF"));
+        //Serial.println(F("WaterManagement:OFF"));
         if (literToWater > 0) {
             EnergyManagement::deactivateSleepMode();
             Pumps::setMain(100);
@@ -65,7 +65,7 @@ namespace WaterManagement {
         Serial.print("s");
         int motorControllerCooldown = (100 - pumpSpeed) * 5; // the controller heats up more when the pump is running solwer
         
-        // If Punp is running for longer then 2 Minutes disable it to cooldown
+        // If Punp is running for longer then 2 Minutes disable it for cooling
         if (currentTime - pumpStateUpdatedTime >= 120 
             && Pumps::mainPumpPercentage > 0) { 
           Pumps::setMain(0); // Let pump and controller cool down
@@ -103,13 +103,13 @@ namespace WaterManagement {
     float sunCompensation = 0.5f + sunnyHours / 20.0f;
     float soilHumidityCompensation = 1.0f - ( soilMoisture / 200.0f );
     
-    uint mlPerEndpoint = 0;
+    uint16_t mlPerEndpoint = 0;
     {
       byte bytes[2] {
         EEPROM.read(BASE_ML_PER_WATERING_POINT_ADRESS), 
         EEPROM.read(BASE_ML_PER_WATERING_POINT_ADRESS + 1)
       };
-      mlPerEndpoint = *(uint*)bytes;
+      mlPerEndpoint = *(uint16_t*)bytes;
     }
 
     uint8_t wateringPoints = (uint8_t)EEPROM.read(WATERING_POINTS_ADRESS);

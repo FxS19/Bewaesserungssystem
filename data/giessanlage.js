@@ -12,26 +12,29 @@ window.addEventListener('load', async function() {
     document.getElementById("okSoilMoisture").value = await sendRequest("/okSoilMoisture");
     document.getElementById("okSoilMoisture").oninput();
     document.getElementById("literControlRange").oninput();
+    await updateInfo();
     setTimeout(addLog, 100);
-    setInterval(async function() {
-        document.getElementById("geplanteBewasserungsmenge").value = await sendRequest("/autoWaterToday");
-        document.getElementById("temperature").value = await sendRequest("/temperature");
-        document.getElementById("soilMoisture").value = await sendRequest("/soilMoisture");
-        document.getElementById("waterStatus").value = await sendRequest("/waterStatus") == "1" ? "Voll" : "Leer";
-        document.getElementById("lux").value = await sendRequest("/lux");
-    }, 5000);
     document.getElementById("jsWarn").style.display = "none";;
 });
 
+async function updateInfo() {
+    document.getElementById("geplanteBewasserungsmenge").value = await sendRequest("/autoWaterToday");
+    document.getElementById("temperature").value = await sendRequest("/temperature");
+    document.getElementById("soilMoisture").value = await sendRequest("/soilMoisture");
+    document.getElementById("waterStatus").value = await sendRequest("/waterStatus") == "1" ? "Voll" : "Leer";
+    document.getElementById("lux").value = await sendRequest("/lux");
+    document.getElementById("clock").value = new Date(await sendRequest("/clock") * 1000).toLocaleString("de-DE");
+}
+
 async function sendSettings() {
-    await sendRequest("/wateringPoints/" + document.getElementById("endpoints").value);
-    await sendRequest("/baseMlPerWateringPoint/" + document.getElementById("mlPerEndpoint").value);
-    await sendRequest("/mainPumpSpeed/" + document.getElementById("mainPumpSpeed").value);
-    await sendRequest("/okSoilMoisture/" + document.getElementById("okSoilMoisture").value);
+    await sendRequest("/wateringPoints?value=" + document.getElementById("endpoints").value);
+    await sendRequest("/baseMlPerWateringPoint?value=" + document.getElementById("mlPerEndpoint").value);
+    await sendRequest("/mainPumpSpeed?value=" + document.getElementById("mainPumpSpeed").value);
+    await sendRequest("/okSoilMoisture?value=" + document.getElementById("okSoilMoisture").value);
 }
 
 async function water(liter) {
-    await sendRequest("/water/" + liter);
+    await sendRequest("/water?value=" + liter);
 }
 
 async function addLog() {
@@ -49,10 +52,9 @@ async function addDayLog() {
         var percentage = i/48 * 100;
         document.getElementById("lineChartDayLoader").setAttribute("aria-valuenow", percentage);
         document.getElementById("lineChartDayLoader").style.width = percentage + "%";
-        var data = JSON.parse(await sendRequest("/log/"+i));
+        var data = JSON.parse(await sendRequest("/log?value="+i));
         if (data.time == 0) break;
-        var date = new Date(data.time * 1000);
-        timestamps.unshift(("00" + date.getDate()).slice(-2) + "." + ("00"+(date.getMonth() + 1)).slice(-2) + "." + date.getFullYear() + " " + ("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2));
+        timestamps.unshift(new Date(data.time * 1000).toLocaleString("de-DE"));
         soil.unshift(data.soil);
         lux.unshift(data.lux);
         watered.unshift(data.watered * 100);
@@ -73,10 +75,9 @@ async function addAllLog() {
         var percentage = (i/677) * 100;
         document.getElementById("lineChartAllLoader").setAttribute("aria-valuenow", percentage);
         document.getElementById("lineChartAllLoader").style.width = percentage + "%";
-        var data = JSON.parse(await sendRequest("/log/"+i));
+        var data = JSON.parse(await sendRequest("/log?value="+i));
         if (data.time == 0) break;
-        var date = new Date(data.time * 1000);
-        timestamps.unshift(("00" + date.getDate()).slice(-2) + "." + ("00"+(date.getMonth() + 1)).slice(-2) + "." + date.getFullYear() + " " + ("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2));
+        timestamps.unshift(new Date(data.time * 1000).toLocaleString("de-DE"));
         soil.unshift(data.soil);
         lux.unshift(data.lux);
         watered.unshift(data.watered * 100);
@@ -94,10 +95,9 @@ async function downloadCSV() {
         var percentage = (i/valuesToDownload) * 100;
         document.getElementById("CSVLoader").setAttribute("aria-valuenow", percentage);
         document.getElementById("CSVLoader").style.width = percentage + "%";
-        var data = JSON.parse(await sendRequest("/log/"+i));
+        var data = JSON.parse(await sendRequest("/log?value="+i));
         if (data.time == 0) break;
-        var date = new Date(data.time * 1000);
-        var timestamp =("00" + date.getDate()).slice(-2) + "." + ("00"+(date.getMonth() + 1)).slice(-2) + "." + date.getFullYear() + " " + ("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2);
+        var timestamp = new Date(data.time * 1000).toLocaleString("de-DE");
         var soil = data.soil;
         var lux = data.lux;
         var watered = data.watered;
